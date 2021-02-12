@@ -17,6 +17,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.web.bind.annotation.PathVariable
 import java.util.*
 
 @ExtendWith(SpringExtension::class)
@@ -33,6 +34,12 @@ internal class PersonControllerTest {
 
     @LocalServerPort
     private var port: Int = 0
+
+    private fun getPath(pathVariable: String) = "http://localhost:${port}/api/person/${pathVariable}"
+
+    private fun getPath() = "http://localhost:${port}/api/person/"
+
+    private var path = "http://localhost:${port}/api/person"
 
     private val defaultUid = UUID.randomUUID().toString()
 
@@ -71,7 +78,7 @@ internal class PersonControllerTest {
         personRepo.deleteAll()
         val personDTO = preparePersonDTO()
         val emptyResponse = restTemplate.exchange(
-            "http://localhost:${port}/",
+            getPath(),
             HttpMethod.POST,
             HttpEntity(personDTO, ),
             ResponseEntity::class.java)
@@ -81,7 +88,7 @@ internal class PersonControllerTest {
         personDTO.uid = ""
 
         val personResponse = restTemplate.exchange(
-            "http://localhost:${port}/",
+            getPath(),
             HttpMethod.POST,
             HttpEntity(personDTO),
             PersonDTO::class.java)
@@ -99,7 +106,7 @@ internal class PersonControllerTest {
     @Test
     fun deletePerson(){
         val emptyResponse = restTemplate.exchange(
-            "http://localhost:${port}/${defaultUid}",
+            getPath(defaultUid),
             HttpMethod.DELETE,
             HttpEntity(null,null),
             Unit::class.java)
@@ -112,7 +119,7 @@ internal class PersonControllerTest {
     @Test
     fun findAllPersons(){
         val emptyResponse = restTemplate.exchange(
-            "http://localhost:${port}/",
+            getPath(),
             HttpMethod.GET,
             HttpEntity(null,null),
             List::class.java
@@ -125,7 +132,7 @@ internal class PersonControllerTest {
     fun updatePerson(){
         val personDTO = preparePersonDTO()
         val emptyResponse = restTemplate.exchange(
-            "http://localhost:${port}/${defaultUid}",
+            getPath(defaultUid),
             HttpMethod.POST,
             HttpEntity(personDTO),
             PersonDTO::class.java
@@ -135,7 +142,7 @@ internal class PersonControllerTest {
 
         personDTO.uid = ""
         val personResponse = restTemplate.exchange(
-            "http://localhost:${port}/${defaultUid}",
+            getPath(defaultUid),
             HttpMethod.POST,
             HttpEntity(personDTO),
             PersonDTO::class.java
@@ -155,7 +162,7 @@ internal class PersonControllerTest {
     @Test
     fun findByUid(){
         val emptyResponse = restTemplate.exchange(
-            "http://localhost:${port}/${defaultUid}",
+            getPath(defaultUid),
             HttpMethod.GET,
             HttpEntity(null, null),
             PersonDTO::class.java
@@ -164,7 +171,7 @@ internal class PersonControllerTest {
         assertEquals(200, emptyResponse.statusCodeValue)
 
         val notFoundPersonResponse = restTemplate.exchange(
-            "http://localhost:${port}/1",
+            getPath("1"),
             HttpMethod.GET,
             HttpEntity(null, null),
             PersonDTO::class.java

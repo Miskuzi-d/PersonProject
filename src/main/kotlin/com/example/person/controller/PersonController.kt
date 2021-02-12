@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/person")
 class PersonController(private val personService: PersonService) {
 
-    @PostMapping("/post")
+    @PostMapping("/")
     fun save(@RequestBody personDTO: PersonDTO): ResponseEntity<PersonDTO> =
         try {
             ResponseEntity.ok(personService.save(personDTO))
@@ -19,7 +19,7 @@ class PersonController(private val personService: PersonService) {
             ResponseEntity.notFound().build()
         }
 
-    @GetMapping("/get")
+    @GetMapping("/")
     fun findAll() = ResponseEntity.ok(personService.findAll())
 
     @GetMapping("/{uid}")
